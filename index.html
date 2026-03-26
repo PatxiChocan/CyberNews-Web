@@ -21,11 +21,31 @@
                 <button id="refresh-btn" title="Actualizar noticias">⟳</button>
             </div>
         </div>
+
+        <!-- Toolbar: search, sort, favorites filter -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Buscar noticias..." autocomplete="off">
+                <button id="search-clear" class="search-clear" style="display:none">✕</button>
+            </div>
+            <div class="toolbar-actions">
+                <select id="sort-select" title="Ordenar por">
+                    <option value="date">Más recientes</option>
+                    <option value="date-asc">Más antiguas</option>
+                    <option value="source">Por fuente (A-Z)</option>
+                </select>
+                <button id="favorites-toggle" class="toolbar-btn" title="Ver favoritos">
+                    <span class="fav-icon">☆</span> Favoritos <span id="fav-count" class="badge">0</span>
+                </button>
+            </div>
+        </div>
+
         <nav>
-            <button class="nav-btn active" data-section="all">Todas</button>
-            <button class="nav-btn" data-section="spain">🇪🇸 España</button>
-            <button class="nav-btn" data-section="europe">🇪🇺 Europa</button>
-            <button class="nav-btn" data-section="world">🌍 Mundo</button>
+            <button class="nav-btn active" data-section="all">Todas <span class="nav-count" id="count-all">0</span></button>
+            <button class="nav-btn" data-section="spain">🇪🇸 España <span class="nav-count" id="count-spain">0</span></button>
+            <button class="nav-btn" data-section="europe">🇪🇺 Europa <span class="nav-count" id="count-europe">0</span></button>
+            <button class="nav-btn" data-section="world">🌍 Mundo <span class="nav-count" id="count-world">0</span></button>
         </nav>
     </header>
 
@@ -47,6 +67,9 @@
             <p>No se encontraron noticias. Intenta actualizar.</p>
         </div>
     </main>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top" title="Volver arriba">↑</button>
 
     <footer>
         <p>CyberNews Portal &copy; 2026 — Fuentes: INCIBE, HackPlayers, Hispasec, ENISA, The Register, The Hacker News, BleepingComputer, Krebs on Security, CISA y más</p>

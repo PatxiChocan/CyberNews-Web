@@ -1,135 +1,35 @@
 // RSS Feed Sources organized by region
 const FEEDS = {
     spain: [
-        {
-            name: "INCIBE",
-            url: "https://www.incibe.es/incibe/sala-de-prensa/notas-de-prensa/rss",
-            region: "spain"
-        },
-        {
-            name: "INCIBE-CERT",
-            url: "https://www.incibe.es/incibe-cert/alerta-temprana/avisos/rss",
-            region: "spain"
-        },
-        {
-            name: "Protege tu Empresa",
-            url: "https://www.incibe.es/protege-tu-empresa/blog/rss",
-            region: "spain"
-        },
-        {
-            name: "HackPlayers",
-            url: "https://www.hackplayers.com/feeds/posts/default?alt=rss",
-            region: "spain"
-        },
-        {
-            name: "Una al Día (Hispasec)",
-            url: "https://unaaldia.hispasec.com/feed",
-            region: "spain"
-        },
-        {
-            name: "Security Art Work",
-            url: "https://www.securityartwork.es/feed/",
-            region: "spain"
-        },
-        {
-            name: "CyberSecurity News ES",
-            url: "https://cybersecuritynews.es/feed/",
-            region: "spain"
-        },
-        {
-            name: "Derecho de la Red",
-            url: "https://derechodelared.com/feed/",
-            region: "spain"
-        }
+        { name: "INCIBE", url: "https://www.incibe.es/incibe/sala-de-prensa/notas-de-prensa/rss", region: "spain" },
+        { name: "INCIBE-CERT", url: "https://www.incibe.es/incibe-cert/alerta-temprana/avisos/rss", region: "spain" },
+        { name: "Protege tu Empresa", url: "https://www.incibe.es/protege-tu-empresa/blog/rss", region: "spain" },
+        { name: "HackPlayers", url: "https://www.hackplayers.com/feeds/posts/default?alt=rss", region: "spain" },
+        { name: "Una al Día (Hispasec)", url: "https://unaaldia.hispasec.com/feed", region: "spain" },
+        { name: "Security Art Work", url: "https://www.securityartwork.es/feed/", region: "spain" },
+        { name: "CyberSecurity News ES", url: "https://cybersecuritynews.es/feed/", region: "spain" },
+        { name: "Derecho de la Red", url: "https://derechodelared.com/feed/", region: "spain" }
     ],
     europe: [
-        {
-            name: "ENISA",
-            url: "https://www.enisa.europa.eu/publications/rss.xml",
-            region: "europe"
-        },
-        {
-            name: "EU CERT",
-            url: "https://cert.europa.eu/publications/security-advisories/rss",
-            region: "europe"
-        },
-        {
-            name: "The Register - Security",
-            url: "https://www.theregister.com/security/headlines.atom",
-            region: "europe"
-        },
-        {
-            name: "Graham Cluley",
-            url: "https://grahamcluley.com/feed/",
-            region: "europe"
-        },
-        {
-            name: "Infosecurity Magazine",
-            url: "https://www.infosecurity-magazine.com/rss/news/",
-            region: "europe"
-        },
-        {
-            name: "Computer Weekly Security",
-            url: "https://www.computerweekly.com/rss/IT-security.xml",
-            region: "europe"
-        }
+        { name: "ENISA", url: "https://www.enisa.europa.eu/publications/rss.xml", region: "europe" },
+        { name: "EU CERT", url: "https://cert.europa.eu/publications/security-advisories/rss", region: "europe" },
+        { name: "The Register - Security", url: "https://www.theregister.com/security/headlines.atom", region: "europe" },
+        { name: "Graham Cluley", url: "https://grahamcluley.com/feed/", region: "europe" },
+        { name: "Infosecurity Magazine", url: "https://www.infosecurity-magazine.com/rss/news/", region: "europe" },
+        { name: "Computer Weekly Security", url: "https://www.computerweekly.com/rss/IT-security.xml", region: "europe" }
     ],
     world: [
-        {
-            name: "The Hacker News",
-            url: "https://feeds.feedburner.com/TheHackersNews",
-            region: "world"
-        },
-        {
-            name: "BleepingComputer",
-            url: "https://www.bleepingcomputer.com/feed/",
-            region: "world"
-        },
-        {
-            name: "Krebs on Security",
-            url: "https://krebsonsecurity.com/feed/",
-            region: "world"
-        },
-        {
-            name: "SecurityWeek",
-            url: "https://www.securityweek.com/feed/",
-            region: "world"
-        },
-        {
-            name: "Dark Reading",
-            url: "https://www.darkreading.com/rss.xml",
-            region: "world"
-        },
-        {
-            name: "Naked Security (Sophos)",
-            url: "https://nakedsecurity.sophos.com/feed/",
-            region: "world"
-        },
-        {
-            name: "Schneier on Security",
-            url: "https://www.schneier.com/feed/atom/",
-            region: "world"
-        },
-        {
-            name: "CISA Alerts",
-            url: "https://www.cisa.gov/cybersecurity-advisories/all.xml",
-            region: "world"
-        },
-        {
-            name: "CSO Online",
-            url: "https://www.csoonline.com/feed/",
-            region: "world"
-        },
-        {
-            name: "Recorded Future",
-            url: "https://therecord.media/feed",
-            region: "world"
-        },
-        {
-            name: "SC Magazine",
-            url: "https://www.scworld.com/feed",
-            region: "world"
-        }
+        { name: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews", region: "world" },
+        { name: "BleepingComputer", url: "https://www.bleepingcomputer.com/feed/", region: "world" },
+        { name: "Krebs on Security", url: "https://krebsonsecurity.com/feed/", region: "world" },
+        { name: "SecurityWeek", url: "https://www.securityweek.com/feed/", region: "world" },
+        { name: "Dark Reading", url: "https://www.darkreading.com/rss.xml", region: "world" },
+        { name: "Naked Security (Sophos)", url: "https://nakedsecurity.sophos.com/feed/", region: "world" },
+        { name: "Schneier on Security", url: "https://www.schneier.com/feed/atom/", region: "world" },
+        { name: "CISA Alerts", url: "https://www.cisa.gov/cybersecurity-advisories/all.xml", region: "world" },
+        { name: "CSO Online", url: "https://www.csoonline.com/feed/", region: "world" },
+        { name: "Recorded Future", url: "https://therecord.media/feed", region: "world" },
+        { name: "SC Magazine", url: "https://www.scworld.com/feed", region: "world" }
     ]
 };
 
@@ -140,9 +40,17 @@ const PROXIES = [
     (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
 ];
 
+// Auto-refresh interval (15 minutes)
+const AUTO_REFRESH_MS = 15 * 60 * 1000;
+
 // State
 let allNews = [];
 let currentSection = "all";
+let currentSort = "date";
+let searchQuery = "";
+let showFavoritesOnly = false;
+let favorites = loadFavorites();
+let autoRefreshTimer = null;
 
 // DOM elements
 const newsContainer = document.getElementById("news-container");
@@ -150,14 +58,27 @@ const loading = document.getElementById("loading");
 const noNews = document.getElementById("no-news");
 const lastUpdateTime = document.getElementById("last-update-time");
 const refreshBtn = document.getElementById("refresh-btn");
+const searchInput = document.getElementById("search-input");
+const searchClear = document.getElementById("search-clear");
+const sortSelect = document.getElementById("sort-select");
+const favoritesToggle = document.getElementById("favorites-toggle");
+const favCount = document.getElementById("fav-count");
+const backToTop = document.getElementById("back-to-top");
 
-// Initialize
+// ─── Initialize ───
 document.addEventListener("DOMContentLoaded", () => {
     setupNavigation();
     setupRefresh();
+    setupSearch();
+    setupSort();
+    setupFavorites();
+    setupBackToTop();
+    updateFavCount();
     loadNews();
+    startAutoRefresh();
 });
 
+// ─── Navigation ───
 function setupNavigation() {
     document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -169,24 +90,132 @@ function setupNavigation() {
     });
 }
 
+// ─── Refresh ───
 function setupRefresh() {
     refreshBtn.addEventListener("click", () => {
         loadNews();
     });
 }
 
+function startAutoRefresh() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(() => {
+        console.log("Auto-refresh activado");
+        loadNews();
+    }, AUTO_REFRESH_MS);
+}
+
+// ─── Search ───
+function setupSearch() {
+    let debounceTimer;
+    searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            searchQuery = searchInput.value.trim().toLowerCase();
+            searchClear.style.display = searchQuery ? "block" : "none";
+            renderNews();
+        }, 250);
+    });
+
+    searchClear.addEventListener("click", () => {
+        searchInput.value = "";
+        searchQuery = "";
+        searchClear.style.display = "none";
+        renderNews();
+    });
+}
+
+// ─── Sort ───
+function setupSort() {
+    sortSelect.addEventListener("change", () => {
+        currentSort = sortSelect.value;
+        renderNews();
+    });
+}
+
+// ─── Favorites ───
+function loadFavorites() {
+    try {
+        return JSON.parse(localStorage.getItem("cyberNewsFavorites")) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveFavorites() {
+    try {
+        localStorage.setItem("cyberNewsFavorites", JSON.stringify(favorites));
+    } catch { /* ignore */ }
+}
+
+function toggleFavorite(newsId) {
+    const idx = favorites.indexOf(newsId);
+    if (idx > -1) {
+        favorites.splice(idx, 1);
+    } else {
+        favorites.push(newsId);
+    }
+    saveFavorites();
+    updateFavCount();
+    renderNews();
+}
+
+function isFavorite(newsId) {
+    return favorites.includes(newsId);
+}
+
+function getNewsId(item) {
+    const str = item.title.substring(0, 80) + item.source;
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary).replace(/[^a-zA-Z0-9]/g, "").substring(0, 40);
+}
+
+function updateFavCount() {
+    favCount.textContent = favorites.length;
+}
+
+function setupFavorites() {
+    favoritesToggle.addEventListener("click", () => {
+        showFavoritesOnly = !showFavoritesOnly;
+        favoritesToggle.classList.toggle("active", showFavoritesOnly);
+        favoritesToggle.querySelector(".fav-icon").textContent = showFavoritesOnly ? "★" : "☆";
+        renderNews();
+    });
+}
+
+// ─── Back to Top ───
+function setupBackToTop() {
+    window.addEventListener("scroll", () => {
+        backToTop.classList.toggle("visible", window.scrollY > 400);
+    });
+
+    backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+}
+
+// ─── Update Section Counts ───
+function updateCounts() {
+    const counts = { all: allNews.length, spain: 0, europe: 0, world: 0 };
+    allNews.forEach(item => {
+        if (counts[item.region] !== undefined) counts[item.region]++;
+    });
+    document.getElementById("count-all").textContent = counts.all;
+    document.getElementById("count-spain").textContent = counts.spain;
+    document.getElementById("count-europe").textContent = counts.europe;
+    document.getElementById("count-world").textContent = counts.world;
+}
+
+// ─── Load News ───
 async function loadNews() {
     loading.style.display = "flex";
     noNews.style.display = "none";
     newsContainer.innerHTML = "";
     refreshBtn.classList.add("spinning");
 
-    const allFeeds = [
-        ...FEEDS.spain,
-        ...FEEDS.europe,
-        ...FEEDS.world
-    ];
-
+    const allFeeds = [...FEEDS.spain, ...FEEDS.europe, ...FEEDS.world];
     console.log(`Cargando ${allFeeds.length} feeds...`);
 
     const results = await Promise.allSettled(
@@ -208,10 +237,7 @@ async function loadNews() {
 
     console.log(`Total: ${successCount}/${allFeeds.length} feeds, ${allNews.length} noticias`);
 
-    // Sort by date, newest first
     allNews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Remove duplicates
     allNews = removeDuplicates(allNews);
 
     loading.style.display = "none";
@@ -221,30 +247,24 @@ async function loadNews() {
         noNews.style.display = "block";
         noNews.innerHTML = `
             <p>No se pudieron cargar las noticias.</p>
-            <p style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted);">
-                Pulsa ⟳ para reintentar.
-            </p>
+            <p style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted);">Pulsa ⟳ para reintentar.</p>
         `;
     }
 
-    // Update timestamp
     const now = new Date();
     lastUpdateTime.textContent = `Actualizado: ${now.toLocaleDateString("es-ES")} ${now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
 
-    // Cache
     try {
-        localStorage.setItem("cyberNewsCache", JSON.stringify({
-            news: allNews,
-            timestamp: now.toISOString()
-        }));
-    } catch (e) { /* ignore */ }
+        localStorage.setItem("cyberNewsCache", JSON.stringify({ news: allNews, timestamp: now.toISOString() }));
+    } catch { /* ignore */ }
 
+    updateCounts();
     renderNews();
 }
 
-// Try each proxy until one works
+// ─── Fetch Feed ───
 async function fetchFeedWithRetry(feed) {
-    // Proxy 0: rss2json (returns JSON directly)
+    // Proxy 0: rss2json (JSON)
     try {
         const res = await fetch(PROXIES[0](feed.url), { signal: AbortSignal.timeout(10000) });
         if (res.ok) {
@@ -265,16 +285,14 @@ async function fetchFeedWithRetry(feed) {
         console.log(`  ${feed.name}: rss2json falló`);
     }
 
-    // Proxy 1 & 2: return raw XML
+    // Proxy 1 & 2: raw XML
     for (let i = 1; i < PROXIES.length; i++) {
         try {
             const res = await fetch(PROXIES[i](feed.url), { signal: AbortSignal.timeout(10000) });
             if (res.ok) {
                 const text = await res.text();
                 const items = parseRSS(text, feed);
-                if (items && items.length > 0) {
-                    return items;
-                }
+                if (items && items.length > 0) return items;
             }
         } catch (e) {
             console.log(`  ${feed.name}: proxy ${i} falló`);
@@ -284,11 +302,11 @@ async function fetchFeedWithRetry(feed) {
     return null;
 }
 
+// ─── Parse RSS ───
 function parseRSS(xml, feed) {
     try {
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, "text/xml");
-
         if (doc.querySelector("parsererror")) return null;
 
         // RSS 2.0
@@ -296,22 +314,14 @@ function parseRSS(xml, feed) {
         if (items.length > 0) {
             return Array.from(items).slice(0, 20).map(item => {
                 const linkEl = item.querySelector("link");
-                let link = "#";
-                if (linkEl) {
-                    link = linkEl.textContent?.trim() || linkEl.getAttribute("href") || "#";
-                }
-                const rawDesc = item.querySelector("description")?.textContent ||
-                    getElementByTagNS(item, "encoded") || "";
+                let link = linkEl ? (linkEl.textContent?.trim() || linkEl.getAttribute("href") || "#") : "#";
+                const rawDesc = item.querySelector("description")?.textContent || getElementByTagNS(item, "encoded") || "";
                 return {
                     title: cleanText(item.querySelector("title")?.textContent || ""),
                     description: cleanText(rawDesc),
                     image: getImageFromItem(item) || extractImageFromHTML(rawDesc),
-                    link: link,
-                    date: item.querySelector("pubDate")?.textContent ||
-                          getElementByTagNS(item, "date") ||
-                          new Date().toISOString(),
-                    source: feed.name,
-                    region: feed.region
+                    link, date: item.querySelector("pubDate")?.textContent || getElementByTagNS(item, "date") || new Date().toISOString(),
+                    source: feed.name, region: feed.region
                 };
             }).filter(item => item.title);
         }
@@ -320,41 +330,31 @@ function parseRSS(xml, feed) {
         const entries = doc.querySelectorAll("entry");
         if (entries.length > 0) {
             return Array.from(entries).slice(0, 20).map(entry => {
-                const rawContent = entry.querySelector("summary")?.textContent ||
-                    entry.querySelector("content")?.textContent || "";
+                const rawContent = entry.querySelector("summary")?.textContent || entry.querySelector("content")?.textContent || "";
                 return {
                     title: cleanText(entry.querySelector("title")?.textContent || ""),
                     description: cleanText(rawContent),
                     image: getImageFromItem(entry) || extractImageFromHTML(rawContent),
-                    link: entry.querySelector("link")?.getAttribute("href") ||
-                          entry.querySelector("link")?.textContent || "#",
-                    date: entry.querySelector("published")?.textContent ||
-                          entry.querySelector("updated")?.textContent ||
-                          new Date().toISOString(),
-                    source: feed.name,
-                    region: feed.region
+                    link: entry.querySelector("link")?.getAttribute("href") || entry.querySelector("link")?.textContent || "#",
+                    date: entry.querySelector("published")?.textContent || entry.querySelector("updated")?.textContent || new Date().toISOString(),
+                    source: feed.name, region: feed.region
                 };
             }).filter(item => item.title);
         }
 
         return null;
-    } catch {
-        return null;
-    }
+    } catch { return null; }
 }
 
-// Extract image from RSS/Atom XML item (media:content, enclosure, media:thumbnail)
+// ─── Image Extraction ───
 function getImageFromItem(item) {
-    // media:content or media:thumbnail
     for (const child of item.children) {
-        if ((child.localName === "content" || child.localName === "thumbnail") &&
-            child.getAttribute("url")) {
+        if ((child.localName === "content" || child.localName === "thumbnail") && child.getAttribute("url")) {
             const type = child.getAttribute("type") || "";
             const url = child.getAttribute("url");
             if (!type || type.startsWith("image")) return url;
         }
     }
-    // enclosure with image type
     const enclosure = item.querySelector("enclosure");
     if (enclosure) {
         const type = enclosure.getAttribute("type") || "";
@@ -363,19 +363,16 @@ function getImageFromItem(item) {
     return null;
 }
 
-// Extract first image URL from HTML string
 function extractImageFromHTML(html) {
     if (!html) return null;
     const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
     return match ? match[1] : null;
 }
 
+// ─── Helpers ───
 function getElementByTagNS(parent, localName) {
-    const children = parent.children;
-    for (let i = 0; i < children.length; i++) {
-        if (children[i].localName === localName) {
-            return children[i].textContent;
-        }
+    for (let i = 0; i < parent.children.length; i++) {
+        if (parent.children[i].localName === localName) return parent.children[i].textContent;
     }
     return null;
 }
@@ -400,53 +397,90 @@ function removeDuplicates(news) {
     });
 }
 
+// ─── Render News ───
 function renderNews() {
-    const filtered = currentSection === "all"
-        ? allNews
+    let filtered = currentSection === "all"
+        ? [...allNews]
         : allNews.filter(item => item.region === currentSection);
+
+    // Favorites filter
+    if (showFavoritesOnly) {
+        filtered = filtered.filter(item => isFavorite(getNewsId(item)));
+    }
+
+    // Search filter
+    if (searchQuery) {
+        filtered = filtered.filter(item =>
+            item.title.toLowerCase().includes(searchQuery) ||
+            item.description.toLowerCase().includes(searchQuery) ||
+            item.source.toLowerCase().includes(searchQuery)
+        );
+    }
+
+    // Sort
+    switch (currentSort) {
+        case "date":
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            break;
+        case "date-asc":
+            filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+        case "source":
+            filtered.sort((a, b) => a.source.localeCompare(b.source));
+            break;
+    }
 
     newsContainer.innerHTML = "";
 
-    if (filtered.length === 0 && allNews.length > 0) {
+    if (filtered.length === 0) {
         noNews.style.display = "block";
-        noNews.innerHTML = `<p>No hay noticias en esta categoría.</p>`;
-    } else if (filtered.length === 0) {
-        noNews.style.display = "block";
+        if (showFavoritesOnly) {
+            noNews.innerHTML = `<p>No tienes favoritos en esta sección.</p>`;
+        } else if (searchQuery) {
+            noNews.innerHTML = `<p>No se encontraron resultados para "<strong>${escapeHtml(searchQuery)}</strong>".</p>`;
+        } else {
+            noNews.innerHTML = `<p>No hay noticias en esta categoría.</p>`;
+        }
     } else {
         noNews.style.display = "none";
     }
 
-    filtered.forEach(item => {
-        const card = createNewsCard(item);
+    filtered.forEach((item, i) => {
+        const card = createNewsCard(item, i);
         newsContainer.appendChild(card);
     });
 }
 
-function createNewsCard(item) {
+// ─── Create Card ───
+function createNewsCard(item, index) {
     const card = document.createElement("a");
     card.className = "news-card";
     card.href = item.link;
     card.target = "_blank";
     card.rel = "noopener noreferrer";
+    card.style.animationDelay = `${Math.min(index * 0.03, 0.5)}s`;
 
-    const regionLabels = {
-        spain: "España",
-        europe: "Europa",
-        world: "Mundo"
-    };
+    const regionLabels = { spain: "España", europe: "Europa", world: "Mundo" };
+    const regionIcons = { spain: "🇪🇸", europe: "🇪🇺", world: "🌍" };
 
     const date = formatDate(item.date);
     const description = item.description.length > 200
         ? item.description.substring(0, 200) + "..."
         : item.description;
 
-    const regionIcons = { spain: "🇪🇸", europe: "🇪🇺", world: "🌍" };
+    const newsId = getNewsId(item);
+    const isFav = isFavorite(newsId);
+
+    // Is new? (less than 2 hours)
+    const isNew = (Date.now() - new Date(item.date).getTime()) < 2 * 60 * 60 * 1000;
 
     const imageHTML = item.image
         ? `<div class="card-image"><img src="${escapeHtml(item.image)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'>${regionIcons[item.region]}</div>'"></div>`
         : `<div class="card-image"><div class="card-image-placeholder">${regionIcons[item.region]}</div></div>`;
 
     card.innerHTML = `
+        ${isNew ? '<span class="card-new-badge">Nueva</span>' : ""}
+        <button class="card-fav-btn ${isFav ? "is-fav" : ""}" data-id="${newsId}" title="${isFav ? "Quitar de favoritos" : "Añadir a favoritos"}">${isFav ? "★" : "☆"}</button>
         ${imageHTML}
         <div class="card-body">
             <div class="card-header">
@@ -462,9 +496,18 @@ function createNewsCard(item) {
         </div>
     `;
 
+    // Favorite button click (prevent opening link)
+    const favBtn = card.querySelector(".card-fav-btn");
+    favBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFavorite(newsId);
+    });
+
     return card;
 }
 
+// ─── Format Date ───
 function formatDate(dateStr) {
     try {
         const date = new Date(dateStr);
@@ -479,11 +522,7 @@ function formatDate(dateStr) {
         if (diffHours < 24) return `Hace ${diffHours} hora${diffHours > 1 ? "s" : ""}`;
         if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? "s" : ""}`;
 
-        return date.toLocaleDateString("es-ES", {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        });
+        return date.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
     } catch {
         return "Reciente";
     }

@@ -25,6 +25,7 @@
     --footer-bg: #1b2a36;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --favorite: #f59e0b;
 }
 
 body {
@@ -117,6 +118,148 @@ header {
     100% { transform: rotate(360deg); }
 }
 
+/* Toolbar */
+.toolbar {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 2rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-primary);
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    flex: 1;
+    min-width: 200px;
+    max-width: 450px;
+    transition: border-color 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: var(--accent);
+}
+
+.search-icon {
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    color: var(--text-muted);
+}
+
+#search-input {
+    border: none;
+    background: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    width: 100%;
+}
+
+#search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0 0.2rem;
+    transition: color 0.2s;
+}
+
+.search-clear:hover {
+    color: var(--accent);
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+}
+
+#sort-select {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    outline: none;
+}
+
+#sort-select:focus {
+    border-color: var(--accent);
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+    border-color: var(--favorite);
+    color: var(--favorite);
+}
+
+.toolbar-btn.active {
+    background: var(--favorite);
+    color: #fff;
+    border-color: var(--favorite);
+}
+
+.toolbar-btn.active:hover {
+    background: #d97706;
+    border-color: #d97706;
+    color: #fff;
+}
+
+.fav-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.badge {
+    background: var(--border);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+    min-width: 1.2rem;
+    text-align: center;
+}
+
+.toolbar-btn.active .badge {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
 /* Navigation */
 nav {
     max-width: 1400px;
@@ -141,6 +284,9 @@ nav {
     transition: all 0.2s;
     white-space: nowrap;
     font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .nav-btn:hover {
@@ -152,6 +298,22 @@ nav {
     color: var(--accent);
     border-bottom-color: var(--accent);
     background: rgba(223, 26, 33, 0.06);
+}
+
+.nav-count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--border);
+    color: var(--text-muted);
+    padding: 0.1rem 0.45rem;
+    border-radius: 10px;
+    min-width: 1.4rem;
+    text-align: center;
+}
+
+.nav-btn.active .nav-count {
+    background: var(--accent);
+    color: #fff;
 }
 
 /* Main */
@@ -206,6 +368,19 @@ main {
     text-decoration: none;
     color: inherit;
     box-shadow: var(--shadow);
+    position: relative;
+    animation: fadeInUp 0.4s ease both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .news-card:hover {
@@ -220,6 +395,52 @@ main {
 
 .news-card:hover .card-image img {
     transform: scale(1.05);
+}
+
+/* Favorite button on card */
+.card-fav-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    line-height: 1;
+}
+
+.card-fav-btn:hover {
+    transform: scale(1.15);
+}
+
+.card-fav-btn.is-fav {
+    background: var(--favorite);
+    color: #fff;
+}
+
+/* New badge */
+.card-new-badge {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    z-index: 10;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
 }
 
 /* Card Image */
@@ -341,6 +562,39 @@ main {
     color: var(--text-secondary);
 }
 
+/* Back to top */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(223, 26, 33, 0.35);
+    transition: all 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    z-index: 200;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
 /* Footer */
 footer {
     background: var(--footer-bg);
@@ -362,6 +616,21 @@ footer {
 
     .last-update {
         margin-left: 0;
+    }
+
+    .toolbar {
+        padding: 0.6rem 1rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    .toolbar-actions {
+        margin-left: 0;
+        justify-content: flex-end;
     }
 
     nav {
@@ -393,5 +662,9 @@ footer {
     .nav-btn {
         padding: 0.6rem 0.8rem;
         font-size: 0.8rem;
+    }
+
+    .toolbar-actions {
+        flex-wrap: wrap;
     }
 }
