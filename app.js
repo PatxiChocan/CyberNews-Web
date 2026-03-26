@@ -10,12 +10,67 @@ const FEEDS = {
             name: "INCIBE-CERT",
             url: "https://www.incibe.es/incibe-cert/alerta-temprana/avisos/rss",
             region: "spain"
+        },
+        {
+            name: "Protege tu Empresa",
+            url: "https://www.incibe.es/protege-tu-empresa/blog/rss",
+            region: "spain"
+        },
+        {
+            name: "HackPlayers",
+            url: "https://www.hackplayers.com/feeds/posts/default?alt=rss",
+            region: "spain"
+        },
+        {
+            name: "Una al Día (Hispasec)",
+            url: "https://unaaldia.hispasec.com/feed",
+            region: "spain"
+        },
+        {
+            name: "Security Art Work",
+            url: "https://www.securityartwork.es/feed/",
+            region: "spain"
+        },
+        {
+            name: "CyberSecurity News ES",
+            url: "https://cybersecuritynews.es/feed/",
+            region: "spain"
+        },
+        {
+            name: "Derecho de la Red",
+            url: "https://derechodelared.com/feed/",
+            region: "spain"
         }
     ],
     europe: [
         {
             name: "ENISA",
             url: "https://www.enisa.europa.eu/publications/rss.xml",
+            region: "europe"
+        },
+        {
+            name: "EU CERT",
+            url: "https://cert.europa.eu/publications/security-advisories/rss",
+            region: "europe"
+        },
+        {
+            name: "The Register - Security",
+            url: "https://www.theregister.com/security/headlines.atom",
+            region: "europe"
+        },
+        {
+            name: "Graham Cluley",
+            url: "https://grahamcluley.com/feed/",
+            region: "europe"
+        },
+        {
+            name: "Infosecurity Magazine",
+            url: "https://www.infosecurity-magazine.com/rss/news/",
+            region: "europe"
+        },
+        {
+            name: "Computer Weekly Security",
+            url: "https://www.computerweekly.com/rss/IT-security.xml",
             region: "europe"
         }
     ],
@@ -44,6 +99,36 @@ const FEEDS = {
             name: "Dark Reading",
             url: "https://www.darkreading.com/rss.xml",
             region: "world"
+        },
+        {
+            name: "Naked Security (Sophos)",
+            url: "https://nakedsecurity.sophos.com/feed/",
+            region: "world"
+        },
+        {
+            name: "Schneier on Security",
+            url: "https://www.schneier.com/feed/atom/",
+            region: "world"
+        },
+        {
+            name: "CISA Alerts",
+            url: "https://www.cisa.gov/cybersecurity-advisories/all.xml",
+            region: "world"
+        },
+        {
+            name: "CSO Online",
+            url: "https://www.csoonline.com/feed/",
+            region: "world"
+        },
+        {
+            name: "Recorded Future",
+            url: "https://therecord.media/feed",
+            region: "world"
+        },
+        {
+            name: "SC Magazine",
+            url: "https://www.scworld.com/feed",
+            region: "world"
         }
     ]
 };
@@ -62,7 +147,6 @@ let currentSection = "all";
 // DOM elements
 const newsContainer = document.getElementById("news-container");
 const loading = document.getElementById("loading");
-const errorMsg = document.getElementById("error");
 const noNews = document.getElementById("no-news");
 const lastUpdateTime = document.getElementById("last-update-time");
 const refreshBtn = document.getElementById("refresh-btn");
@@ -93,7 +177,6 @@ function setupRefresh() {
 
 async function loadNews() {
     loading.style.display = "flex";
-    errorMsg.style.display = "none";
     noNews.style.display = "none";
     newsContainer.innerHTML = "";
     refreshBtn.classList.add("spinning");
@@ -104,7 +187,7 @@ async function loadNews() {
         ...FEEDS.world
     ];
 
-    console.log(`Intentando cargar ${allFeeds.length} feeds...`);
+    console.log(`Cargando ${allFeeds.length} feeds...`);
 
     const results = await Promise.allSettled(
         allFeeds.map(feed => fetchFeedWithRetry(feed))
@@ -112,7 +195,6 @@ async function loadNews() {
 
     allNews = [];
     let successCount = 0;
-    let errorCount = 0;
 
     results.forEach((result, i) => {
         if (result.status === "fulfilled" && result.value && result.value.length > 0) {
@@ -120,35 +202,26 @@ async function loadNews() {
             successCount++;
             console.log(`✅ ${allFeeds[i].name}: ${result.value.length} noticias`);
         } else {
-            errorCount++;
             console.warn(`❌ ${allFeeds[i].name}: sin resultados`);
         }
     });
 
-    console.log(`Resultado: ${successCount} feeds OK, ${errorCount} fallidos, ${allNews.length} noticias total`);
+    console.log(`Total: ${successCount}/${allFeeds.length} feeds, ${allNews.length} noticias`);
 
     // Sort by date, newest first
     allNews.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Remove duplicates by title similarity
+    // Remove duplicates
     allNews = removeDuplicates(allNews);
 
     loading.style.display = "none";
     refreshBtn.classList.remove("spinning");
 
-    if (errorCount > 0 && allNews.length > 0) {
-        errorMsg.style.display = "block";
-        errorMsg.querySelector("p").textContent =
-            `⚠️ ${errorCount} de ${allFeeds.length} fuentes no pudieron cargarse. Mostrando ${allNews.length} noticias disponibles.`;
-    }
-
     if (allNews.length === 0) {
         noNews.style.display = "block";
         noNews.innerHTML = `
-            <p>⚠️ No se pudieron cargar las noticias.</p>
-            <p style="margin-top:0.5rem;font-size:0.85rem;color:#8892a4;">
-                Esto puede ocurrir si los proxies CORS están saturados.<br>
-                Abre la consola del navegador (F12) para ver detalles.<br>
+            <p>No se pudieron cargar las noticias.</p>
+            <p style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted);">
                 Pulsa ⟳ para reintentar.
             </p>
         `;
@@ -156,9 +229,9 @@ async function loadNews() {
 
     // Update timestamp
     const now = new Date();
-    lastUpdateTime.textContent = `Última actualización: ${now.toLocaleDateString("es-ES")} ${now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+    lastUpdateTime.textContent = `Actualizado: ${now.toLocaleDateString("es-ES")} ${now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
 
-    // Cache news
+    // Cache
     try {
         localStorage.setItem("cyberNewsCache", JSON.stringify({
             news: allNews,
@@ -177,7 +250,6 @@ async function fetchFeedWithRetry(feed) {
         if (res.ok) {
             const data = await res.json();
             if (data.status === "ok" && data.items && data.items.length > 0) {
-                console.log(`  ${feed.name}: rss2json OK`);
                 return data.items.map(item => ({
                     title: cleanText(item.title),
                     description: cleanText(item.description || item.content || ""),
@@ -189,10 +261,10 @@ async function fetchFeedWithRetry(feed) {
             }
         }
     } catch (e) {
-        console.log(`  ${feed.name}: rss2json falló (${e.message})`);
+        console.log(`  ${feed.name}: rss2json falló`);
     }
 
-    // Proxy 1 & 2: return raw XML, need parsing
+    // Proxy 1 & 2: return raw XML
     for (let i = 1; i < PROXIES.length; i++) {
         try {
             const res = await fetch(PROXIES[i](feed.url), { signal: AbortSignal.timeout(10000) });
@@ -200,12 +272,11 @@ async function fetchFeedWithRetry(feed) {
                 const text = await res.text();
                 const items = parseRSS(text, feed);
                 if (items && items.length > 0) {
-                    console.log(`  ${feed.name}: proxy ${i} OK`);
                     return items;
                 }
             }
         } catch (e) {
-            console.log(`  ${feed.name}: proxy ${i} falló (${e.message})`);
+            console.log(`  ${feed.name}: proxy ${i} falló`);
         }
     }
 
@@ -217,23 +288,17 @@ function parseRSS(xml, feed) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, "text/xml");
 
-        // Check for parse errors
-        if (doc.querySelector("parsererror")) {
-            // Maybe it's HTML wrapped - try to extract from CDATA or content
-            return null;
-        }
+        if (doc.querySelector("parsererror")) return null;
 
-        // Try RSS 2.0 format
+        // RSS 2.0
         let items = doc.querySelectorAll("item");
         if (items.length > 0) {
             return Array.from(items).slice(0, 20).map(item => {
                 const linkEl = item.querySelector("link");
                 let link = "#";
                 if (linkEl) {
-                    // Sometimes <link> text is in nextSibling due to XML parsing quirks
                     link = linkEl.textContent?.trim() || linkEl.getAttribute("href") || "#";
                 }
-
                 return {
                     title: cleanText(item.querySelector("title")?.textContent || ""),
                     description: cleanText(
@@ -250,7 +315,7 @@ function parseRSS(xml, feed) {
             }).filter(item => item.title);
         }
 
-        // Try Atom format
+        // Atom
         const entries = doc.querySelectorAll("entry");
         if (entries.length > 0) {
             return Array.from(entries).slice(0, 20).map(entry => ({
@@ -275,7 +340,6 @@ function parseRSS(xml, feed) {
     }
 }
 
-// Helper to get namespaced elements like content:encoded, dc:date
 function getElementByTagNS(parent, localName) {
     const children = parent.children;
     for (let i = 0; i < children.length; i++) {
@@ -313,7 +377,10 @@ function renderNews() {
 
     newsContainer.innerHTML = "";
 
-    if (filtered.length === 0) {
+    if (filtered.length === 0 && allNews.length > 0) {
+        noNews.style.display = "block";
+        noNews.innerHTML = `<p>No hay noticias en esta categoría.</p>`;
+    } else if (filtered.length === 0) {
         noNews.style.display = "block";
     } else {
         noNews.style.display = "none";

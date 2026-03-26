@@ -5,25 +5,31 @@
 }
 
 :root {
-    --bg-primary: #0a0e17;
-    --bg-secondary: #111827;
-    --bg-card: #1a2236;
-    --bg-card-hover: #1f2a42;
-    --accent: #00d4ff;
-    --accent-dim: #0097b8;
-    --text-primary: #e8edf5;
-    --text-secondary: #8892a4;
-    --text-muted: #5a6478;
-    --border: #2a3450;
-    --spain: #ff6b6b;
-    --europe: #4ecdc4;
-    --world: #ffd93d;
-    --danger: #ff4757;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f7;
+    --bg-card: #ffffff;
+    --bg-card-hover: #fafafa;
+    --accent: #DF1A21;
+    --accent-hover: #c01218;
+    --blue: #0098D7;
+    --blue-dark: #017DB2;
+    --navy: #0E3062;
+    --text-primary: #212529;
+    --text-secondary: #555555;
+    --text-muted: #68696b;
+    --border: #e7e9ea;
+    --border-strong: #cccccc;
+    --spain: #DF1A21;
+    --europe: #0E3062;
+    --world: #0098D7;
+    --footer-bg: #1b2a36;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
@@ -31,13 +37,13 @@ body {
 
 /* Header */
 header {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, #0d1525 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 1.5rem 2rem 0;
+    background: var(--bg-primary);
+    border-bottom: 3px solid var(--accent);
+    padding: 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
 }
 
 .header-content {
@@ -47,6 +53,7 @@ header {
     align-items: center;
     gap: 1.5rem;
     flex-wrap: wrap;
+    padding: 1rem 2rem;
 }
 
 .logo {
@@ -63,6 +70,7 @@ header {
     font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    color: var(--text-primary);
 }
 
 .accent {
@@ -84,8 +92,8 @@ header {
 }
 
 #refresh-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
     color: var(--accent);
     font-size: 1.2rem;
     padding: 0.3rem 0.6rem;
@@ -95,7 +103,9 @@ header {
 }
 
 #refresh-btn:hover {
-    background: var(--bg-card-hover);
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
     transform: rotate(180deg);
 }
 
@@ -110,41 +120,45 @@ header {
 /* Navigation */
 nav {
     max-width: 1400px;
-    margin: 1rem auto 0;
+    margin: 0 auto;
     display: flex;
-    gap: 0.5rem;
+    gap: 0;
     overflow-x: auto;
-    padding-bottom: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 0 2rem;
 }
 
 .nav-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
-    padding: 0.7rem 1.2rem;
+    padding: 0.8rem 1.4rem;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
     transition: all 0.2s;
     white-space: nowrap;
     font-family: inherit;
 }
 
 .nav-btn:hover {
-    color: var(--text-primary);
+    color: var(--accent);
+    background: rgba(223, 26, 33, 0.04);
 }
 
 .nav-btn.active {
     color: var(--accent);
     border-bottom-color: var(--accent);
+    background: rgba(223, 26, 33, 0.06);
 }
 
 /* Main */
 main {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
 }
 
 /* Loading */
@@ -167,15 +181,9 @@ main {
     animation: spin 0.8s linear infinite;
 }
 
-/* Error */
+/* Error - hidden by default */
 .error-message {
-    background: rgba(255, 71, 87, 0.1);
-    border: 1px solid rgba(255, 71, 87, 0.3);
-    border-radius: 8px;
-    padding: 0.8rem 1.2rem;
-    margin-bottom: 1.5rem;
-    color: var(--danger);
-    font-size: 0.85rem;
+    display: none !important;
 }
 
 /* News Grid */
@@ -189,22 +197,27 @@ main {
 .news-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.4rem;
     transition: all 0.25s;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.7rem;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
+    box-shadow: var(--shadow);
+    border-top: 3px solid transparent;
 }
 
 .news-card:hover {
     background: var(--bg-card-hover);
-    border-color: var(--accent-dim);
+    box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 212, 255, 0.08);
+}
+
+.news-card:hover .card-title {
+    color: var(--accent);
 }
 
 .card-header {
@@ -216,46 +229,47 @@ main {
 
 .card-region {
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
+    padding: 0.25rem 0.7rem;
+    border-radius: 3px;
     flex-shrink: 0;
+    color: #fff;
 }
 
 .region-spain {
-    background: rgba(255, 107, 107, 0.15);
-    color: var(--spain);
+    background: var(--spain);
 }
 
 .region-europe {
-    background: rgba(78, 205, 196, 0.15);
-    color: var(--europe);
+    background: var(--europe);
 }
 
 .region-world {
-    background: rgba(255, 217, 61, 0.15);
-    color: var(--world);
+    background: var(--world);
 }
 
 .card-source {
     font-size: 0.75rem;
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .card-title {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 700;
     line-height: 1.4;
     color: var(--text-primary);
+    transition: color 0.2s;
 }
 
 .card-description {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -279,7 +293,7 @@ main {
 .card-link {
     font-size: 0.75rem;
     color: var(--accent);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 /* No news */
@@ -291,28 +305,29 @@ main {
 
 /* Footer */
 footer {
+    background: var(--footer-bg);
     text-align: center;
     padding: 2rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.78rem;
-    border-top: 1px solid var(--border);
     margin-top: 3rem;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    header {
-        padding: 1rem 1rem 0;
-    }
-
     .header-content {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+        padding: 1rem;
     }
 
     .last-update {
         margin-left: 0;
+    }
+
+    nav {
+        padding: 0 1rem;
     }
 
     main {
@@ -331,10 +346,6 @@ footer {
 @media (max-width: 480px) {
     .logo h1 {
         font-size: 1.2rem;
-    }
-
-    nav {
-        gap: 0;
     }
 
     .nav-btn {
