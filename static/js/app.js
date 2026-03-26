@@ -253,6 +253,7 @@ async function fetchFeedWithRetry(feed) {
                 return data.items.map(item => ({
                     title: cleanText(item.title),
                     description: cleanText(item.description || item.content || ""),
+                    image: item.thumbnail || item.enclosure?.link || extractImageFromHTML(item.description || item.content || ""),
                     link: item.link,
                     date: item.pubDate || new Date().toISOString(),
                     source: feed.name,
@@ -299,12 +300,12 @@ function parseRSS(xml, feed) {
                 if (linkEl) {
                     link = linkEl.textContent?.trim() || linkEl.getAttribute("href") || "#";
                 }
+                const rawDesc = item.querySelector("description")?.textContent ||
+                    getElementByTagNS(item, "encoded") || "";
                 return {
                     title: cleanText(item.querySelector("title")?.textContent || ""),
-                    description: cleanText(
-                        item.querySelector("description")?.textContent ||
-                        getElementByTagNS(item, "encoded") || ""
-                    ),
+                    description: cleanText(rawDesc),
+                    image: getImageFromItem(item) || extractImageFromHTML(rawDesc),
                     link: link,
                     date: item.querySelector("pubDate")?.textContent ||
                           getElementByTagNS(item, "date") ||
@@ -318,26 +319,55 @@ function parseRSS(xml, feed) {
         // Atom
         const entries = doc.querySelectorAll("entry");
         if (entries.length > 0) {
-            return Array.from(entries).slice(0, 20).map(entry => ({
-                title: cleanText(entry.querySelector("title")?.textContent || ""),
-                description: cleanText(
-                    entry.querySelector("summary")?.textContent ||
-                    entry.querySelector("content")?.textContent || ""
-                ),
-                link: entry.querySelector("link")?.getAttribute("href") ||
-                      entry.querySelector("link")?.textContent || "#",
-                date: entry.querySelector("published")?.textContent ||
-                      entry.querySelector("updated")?.textContent ||
-                      new Date().toISOString(),
-                source: feed.name,
-                region: feed.region
-            })).filter(item => item.title);
+            return Array.from(entries).slice(0, 20).map(entry => {
+                const rawContent = entry.querySelector("summary")?.textContent ||
+                    entry.querySelector("content")?.textContent || "";
+                return {
+                    title: cleanText(entry.querySelector("title")?.textContent || ""),
+                    description: cleanText(rawContent),
+                    image: getImageFromItem(entry) || extractImageFromHTML(rawContent),
+                    link: entry.querySelector("link")?.getAttribute("href") ||
+                          entry.querySelector("link")?.textContent || "#",
+                    date: entry.querySelector("published")?.textContent ||
+                          entry.querySelector("updated")?.textContent ||
+                          new Date().toISOString(),
+                    source: feed.name,
+                    region: feed.region
+                };
+            }).filter(item => item.title);
         }
 
         return null;
     } catch {
         return null;
     }
+}
+
+// Extract image from RSS/Atom XML item (media:content, enclosure, media:thumbnail)
+function getImageFromItem(item) {
+    // media:content or media:thumbnail
+    for (const child of item.children) {
+        if ((child.localName === "content" || child.localName === "thumbnail") &&
+            child.getAttribute("url")) {
+            const type = child.getAttribute("type") || "";
+            const url = child.getAttribute("url");
+            if (!type || type.startsWith("image")) return url;
+        }
+    }
+    // enclosure with image type
+    const enclosure = item.querySelector("enclosure");
+    if (enclosure) {
+        const type = enclosure.getAttribute("type") || "";
+        if (type.startsWith("image")) return enclosure.getAttribute("url");
+    }
+    return null;
+}
+
+// Extract first image URL from HTML string
+function extractImageFromHTML(html) {
+    if (!html) return null;
+    const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+    return match ? match[1] : null;
 }
 
 function getElementByTagNS(parent, localName) {
@@ -410,16 +440,25 @@ function createNewsCard(item) {
         ? item.description.substring(0, 200) + "..."
         : item.description;
 
+    const regionIcons = { spain: "🇪🇸", europe: "🇪🇺", world: "🌍" };
+
+    const imageHTML = item.image
+        ? `<div class="card-image"><img src="${escapeHtml(item.image)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'>${regionIcons[item.region]}</div>'"></div>`
+        : `<div class="card-image"><div class="card-image-placeholder">${regionIcons[item.region]}</div></div>`;
+
     card.innerHTML = `
-        <div class="card-header">
-            <span class="card-source">${escapeHtml(item.source)}</span>
-            <span class="card-region region-${item.region}">${regionLabels[item.region]}</span>
-        </div>
-        <h3 class="card-title">${escapeHtml(item.title)}</h3>
-        ${description ? `<p class="card-description">${escapeHtml(description)}</p>` : ""}
-        <div class="card-footer">
-            <span class="card-date">${date}</span>
-            <span class="card-link">Leer más →</span>
+        ${imageHTML}
+        <div class="card-body">
+            <div class="card-header">
+                <span class="card-source">${escapeHtml(item.source)}</span>
+                <span class="card-region region-${item.region}">${regionLabels[item.region]}</span>
+            </div>
+            <h3 class="card-title">${escapeHtml(item.title)}</h3>
+            ${description ? `<p class="card-description">${escapeHtml(description)}</p>` : ""}
+            <div class="card-footer">
+                <span class="card-date">${date}</span>
+                <span class="card-link">Leer más →</span>
+            </div>
         </div>
     `;
 
