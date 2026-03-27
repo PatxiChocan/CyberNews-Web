@@ -76,15 +76,25 @@ app.get('/api/feeds', async (req, res) => {
         if (result.status === 'fulfilled' && result.value) {
             const { feed, items } = result.value;
             if (items.length > 0) {
-                const newsItems = items.slice(0, 20).map(item => ({
-                    title: item.title || '',
-                    description: item.contentSnippet || item.content || '',
-                    image: item.enclosure?.url || extractImageFromHTML(item.content || '') || null,
-                    link: item.link || '#',
-                    date: item.pubDate || item.isoDate || new Date().toISOString(),
-                    source: feed.name,
-                    region: feed.region
-                })).filter(item => item.title);
+                const newsItems = items.slice(0, 20).map(item => {
+                    const originalImage = item.enclosure?.url || extractImageFromHTML(item.content || '');
+                    const title = item.title || '';
+                    // Generate a seed from title for consistent placeholder images
+                    const seed = Math.abs(title.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0));
+                    const svgContent = generateTechSVG(seed);
+                    const placeholderImage = `data:image/svg+xml;base64,${Buffer.from(svgContent).toString('base64')}`;
+
+                    return {
+                        title: title,
+                        description: item.contentSnippet || item.content || '',
+                        image: originalImage || placeholderImage,
+                        link: item.link || '#',
+                        date: item.pubDate || item.isoDate || new Date().toISOString(),
+                        source: feed.name,
+                        region: feed.region,
+                        category: categorizeItem(title, item.contentSnippet || item.content || '')
+                    };
+                }).filter(item => item.title);
 
                 allNews.push(...newsItems);
                 successCount++;
@@ -116,11 +126,72 @@ app.get('/api/feeds', async (req, res) => {
     });
 });
 
+// Categorize news item based on keywords
+function categorizeItem(title, description) {
+    const text = `${title} ${description}`.toLowerCase();
+    if (/cve|vulnerabilidad|exploit|zero.?day|0-day|rce|patch|parche|buffer overflow|sql injection|xss/.test(text)) return 'vulnerability';
+    if (/ransomware|malware|trojan|backdoor|botnet|spyware|rootkit|worm|virus|stealer/.test(text)) return 'malware';
+    if (/phishing|smishing|vishing|estafa|fraude|suplantaci|ingeniería social|credential|spear/.test(text)) return 'phishing';
+    if (/breach|filtrac|data leak|datos expuestos|robo de datos|hackeo|compromiso|exfiltrac/.test(text)) return 'breach';
+    if (/apt|threat actor|nation.?state|espionaje|advanced persistent|campaign/.test(text)) return 'apt';
+    if (/gdpr|rgpd|cumplimiento|normativa|regulaci|nis2|ens|compliance|iso 27001/.test(text)) return 'compliance';
+    if (/herramienta|tool|framework|pentest|red team|ctf|poc|exploit kit|scanner/.test(text)) return 'tools';
+    return 'general';
+}
+
 // Helper function to extract image from HTML
 function extractImageFromHTML(html) {
     if (!html) return null;
     const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
     return match ? match[1] : null;
+}
+
+// Generate a tech-style SVG placeholder
+function generateTechSVG(seed) {
+    const colors = ['#0098D7', '#DF1A21', '#0E3062', '#17C0EB', '#FF6B6B', '#4ECDC4'];
+    const color = colors[seed % colors.length];
+    const bgColor = colors[(seed + 1) % colors.length];
+
+    // Generate grid/matrix pattern
+    let gridElements = '';
+    const gridSize = 8;
+    const cellSize = 50;
+
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            const rand = (seed + i * gridSize + j) % 3;
+            if (rand === 0) {
+                gridElements += `<rect x="${i * cellSize}" y="${j * cellSize}" width="${cellSize}" height="${cellSize}" fill="${color}" opacity="0.3" stroke="${color}" stroke-width="2"/>`;
+            } else if (rand === 1) {
+                gridElements += `<circle cx="${i * cellSize + cellSize/2}" cy="${j * cellSize + cellSize/2}" r="${cellSize/3}" fill="${color}" opacity="0.4"/>`;
+            }
+        }
+    }
+
+    // Add some connecting lines for tech feel
+    let lines = '';
+    for (let i = 0; i < 5; i++) {
+        const x1 = (seed * 37 + i * 123) % 400;
+        const y1 = (seed * 61 + i * 89) % 400;
+        const x2 = (seed * 41 + i * 151) % 400;
+        const y2 = (seed * 53 + i * 97) % 400;
+        lines += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2" opacity="0.5"/>`;
+    }
+
+    const svg = `<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:${bgColor};stop-opacity:1" />
+                <stop offset="100%" style="stop-color:${color};stop-opacity:0.2" />
+            </linearGradient>
+        </defs>
+        <rect width="400" height="250" fill="url(#grad)"/>
+        ${gridElements}
+        ${lines}
+        <text x="200" y="125" font-family="monospace" font-size="24" fill="${color}" opacity="0.6" text-anchor="middle">{}</text>
+    </svg>`;
+
+    return svg;
 }
 
 const PORT = process.env.PORT || 3000;

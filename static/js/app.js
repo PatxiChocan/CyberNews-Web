@@ -4,6 +4,29 @@ const API_URL = '/api/feeds';
 // Auto-refresh interval (15 minutes)
 const AUTO_REFRESH_MS = 15 * 60 * 1000;
 
+// ─── Dark Mode ───
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-toggle').textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('theme-toggle').textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
 // State
 let allNews = [];
 let currentSection = "all";
@@ -12,6 +35,14 @@ let searchQuery = "";
 let showFavoritesOnly = false;
 let favorites = loadFavorites();
 let autoRefreshTimer = null;
+let currentCategory = "all";
+let dateFilter = "all";
+let currentSource = "all";
+
+// Chart instances
+let chartRegion = null;
+let chartCategory = null;
+let chartSources = null;
 
 // DOM elements
 const newsContainer = document.getElementById("news-container");
@@ -25,19 +56,42 @@ const sortSelect = document.getElementById("sort-select");
 const favoritesToggle = document.getElementById("favorites-toggle");
 const favCount = document.getElementById("fav-count");
 const backToTop = document.getElementById("back-to-top");
+const statsContainer = document.getElementById("stats-container");
+const modalOverlay = document.getElementById("modal-overlay");
+const modalClose = document.getElementById("modal-close");
 
 // ─── Initialize ───
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    setupThemeToggle();
     setupNavigation();
     setupRefresh();
     setupSearch();
     setupSort();
     setupFavorites();
+    setupAdvancedFilters();
     setupBackToTop();
+    setupModal();
     updateFavCount();
     loadNews();
     startAutoRefresh();
 });
+
+// ─── Modal Setup ───
+function setupModal() {
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', e => {
+        if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modalOverlay.style.display !== 'none') closeModal();
+    });
+}
+
+// ─── Theme Toggle ───
+function setupThemeToggle() {
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+}
 
 // ─── Navigation ───
 function setupNavigation() {
@@ -46,7 +100,17 @@ function setupNavigation() {
             document.querySelector(".nav-btn.active").classList.remove("active");
             btn.classList.add("active");
             currentSection = btn.dataset.section;
-            renderNews();
+            if (currentSection === "estadisticas") {
+                newsContainer.style.display = "none";
+                loading.style.display = "none";
+                noNews.style.display = "none";
+                statsContainer.style.display = "block";
+                renderStats();
+            } else {
+                statsContainer.style.display = "none";
+                newsContainer.style.display = "";
+                renderNews();
+            }
         });
     });
 }
@@ -92,6 +156,48 @@ function setupSort() {
         currentSort = sortSelect.value;
         renderNews();
     });
+}
+
+// ─── Advanced Filters ───
+function setupAdvancedFilters() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            dateFilter = btn.dataset.date;
+            renderNews();
+        });
+    });
+    document.getElementById('source-select').addEventListener('change', e => {
+        currentSource = e.target.value;
+        renderNews();
+    });
+    document.getElementById('category-select').addEventListener('change', e => {
+        currentCategory = e.target.value;
+        renderNews();
+    });
+}
+
+function getTrendingNews() {
+    const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+    return allNews
+        .filter(item => new Date(item.date).getTime() > cutoff)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 15);
+}
+
+function populateSources() {
+    const select = document.getElementById('source-select');
+    const currentVal = select.value;
+    const sources = [...new Set(allNews.map(n => n.source))].sort();
+    select.innerHTML = `<option value="all">Todas las fuentes</option>`;
+    sources.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        select.appendChild(opt);
+    });
+    if (sources.includes(currentVal)) select.value = currentVal;
 }
 
 // ─── Favorites ───
@@ -159,14 +265,16 @@ function setupBackToTop() {
 
 // ─── Update Section Counts ───
 function updateCounts() {
-    const counts = { all: allNews.length, spain: 0, europe: 0, world: 0 };
+    const counts = { all: allNews.length, spain: 0, europe: 0, world: 0, trending: 0 };
     allNews.forEach(item => {
         if (counts[item.region] !== undefined) counts[item.region]++;
     });
+    counts.trending = getTrendingNews().length;
     document.getElementById("count-all").textContent = counts.all;
     document.getElementById("count-spain").textContent = counts.spain;
     document.getElementById("count-europe").textContent = counts.europe;
     document.getElementById("count-world").textContent = counts.world;
+    document.getElementById("count-trending").textContent = counts.trending;
 }
 
 // ─── Load News ───
@@ -182,6 +290,7 @@ async function loadNews() {
 
         const data = await response.json();
         allNews = data.news || [];
+        populateSources();
 
         console.log(`Total: ${data.successFeeds}/${data.totalFeeds} feeds, ${allNews.length} noticias`);
 
@@ -231,9 +340,32 @@ function cleanText(text) {
 
 // ─── Render News ───
 function renderNews() {
-    let filtered = currentSection === "all"
-        ? [...allNews]
-        : allNews.filter(item => item.region === currentSection);
+    let filtered;
+
+    // Section filter (including trending)
+    if (currentSection === "trending") {
+        filtered = getTrendingNews();
+    } else {
+        filtered = currentSection === "all"
+            ? [...allNews]
+            : allNews.filter(item => item.region === currentSection);
+    }
+
+    // Date filter
+    if (dateFilter !== "all") {
+        const ms = dateFilter === "24h" ? 86400000 : 604800000;
+        filtered = filtered.filter(item => Date.now() - new Date(item.date).getTime() < ms);
+    }
+
+    // Source filter
+    if (currentSource !== "all") {
+        filtered = filtered.filter(item => item.source === currentSource);
+    }
+
+    // Category filter
+    if (currentCategory !== "all") {
+        filtered = filtered.filter(item => item.category === currentCategory);
+    }
 
     // Favorites filter
     if (showFavoritesOnly) {
@@ -283,6 +415,118 @@ function renderNews() {
     });
 }
 
+// ─── Statistics ───
+function renderStats() {
+    if (chartRegion) { chartRegion.destroy(); chartRegion = null; }
+    if (chartCategory) { chartCategory.destroy(); chartCategory = null; }
+    if (chartSources) { chartSources.destroy(); chartSources = null; }
+
+    // Chart 1: Por región (doughnut)
+    const regionCounts = { spain: 0, europe: 0, world: 0 };
+    allNews.forEach(n => { if (regionCounts[n.region] !== undefined) regionCounts[n.region]++; });
+
+    chartRegion = new Chart(document.getElementById('chart-region'), {
+        type: 'doughnut',
+        data: {
+            labels: ['España', 'Europa', 'Mundo'],
+            datasets: [{
+                data: [regionCounts.spain, regionCounts.europe, regionCounts.world],
+                backgroundColor: ['#DF1A21', '#0E3062', '#0098D7'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } },
+            cutout: '60%'
+        }
+    });
+
+    // Chart 2: Por categoría (bar)
+    const catLabels = {
+        vulnerability: 'Vulnerabilidad', malware: 'Malware', phishing: 'Phishing',
+        breach: 'Brecha', apt: 'APT', compliance: 'Compliance', tools: 'Herramientas', general: 'General'
+    };
+    const catColors = {
+        vulnerability: '#e67e22', malware: '#e74c3c', phishing: '#9b59b6',
+        breach: '#c0392b', apt: '#8e44ad', compliance: '#2980b9', tools: '#1abc9c', general: '#95a5a6'
+    };
+    const catCounts = {};
+    allNews.forEach(n => { catCounts[n.category] = (catCounts[n.category] || 0) + 1; });
+    const catEntries = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+
+    chartCategory = new Chart(document.getElementById('chart-category'), {
+        type: 'bar',
+        data: {
+            labels: catEntries.map(([k]) => catLabels[k] || k),
+            datasets: [{
+                data: catEntries.map(([, v]) => v),
+                backgroundColor: catEntries.map(([k]) => catColors[k] || '#95a5a6'),
+                borderRadius: 6
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Chart 3: Top 10 fuentes (bar horizontal)
+    const sourceCounts = {};
+    allNews.forEach(n => { sourceCounts[n.source] = (sourceCounts[n.source] || 0) + 1; });
+    const topSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+    chartSources = new Chart(document.getElementById('chart-sources'), {
+        type: 'bar',
+        data: {
+            labels: topSources.map(([k]) => k),
+            datasets: [{
+                data: topSources.map(([, v]) => v),
+                backgroundColor: '#0098D7',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+}
+
+// ─── Reading Modal ───
+function openReadingModal(item) {
+    const regionLabels = { spain: 'España', europe: 'Europa', world: 'Mundo' };
+    const categoryLabels = {
+        vulnerability: 'Vulnerabilidad', malware: 'Malware', phishing: 'Phishing',
+        breach: 'Brecha', apt: 'APT', compliance: 'Compliance', tools: 'Herramientas'
+    };
+
+    const imgWrap = document.getElementById('modal-image-wrap');
+    imgWrap.innerHTML = item.image
+        ? `<img src="${escapeHtml(item.image)}" alt="" class="modal-image" onerror="this.style.display='none'">`
+        : '';
+
+    const catLabel = item.category !== 'general' ? categoryLabels[item.category] : null;
+    document.getElementById('modal-meta').innerHTML = `
+        <span class="card-source">${escapeHtml(item.source)}</span>
+        ${catLabel ? `<span class="card-category category-${item.category}">${catLabel}</span>` : ''}
+        <span class="card-region region-${item.region}">${regionLabels[item.region]}</span>
+        <span class="modal-date">${formatDate(item.date)}</span>
+    `;
+
+    document.getElementById('modal-title').textContent = item.title;
+    document.getElementById('modal-description').textContent = cleanText(item.description);
+    document.getElementById('modal-link').href = item.link;
+
+    modalOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modalOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
 // ─── Create Card ───
 function createNewsCard(item, index) {
     const card = document.createElement("a");
@@ -291,9 +535,19 @@ function createNewsCard(item, index) {
     card.target = "_blank";
     card.rel = "noopener noreferrer";
     card.style.animationDelay = `${Math.min(index * 0.03, 0.5)}s`;
+    card.dataset.region = item.region;
 
     const regionLabels = { spain: "España", europe: "Europa", world: "Mundo" };
     const regionIcons = { spain: "🇪🇸", europe: "🇪🇺", world: "🌍" };
+    const categoryLabels = {
+        vulnerability: "Vulnerabilidad",
+        malware: "Malware",
+        phishing: "Phishing",
+        breach: "Brecha",
+        apt: "APT",
+        compliance: "Compliance",
+        tools: "Herramientas"
+    };
 
     const date = formatDate(item.date);
     const description = item.description.length > 200
@@ -306,6 +560,8 @@ function createNewsCard(item, index) {
     // Is new? (less than 2 hours)
     const isNew = (Date.now() - new Date(item.date).getTime()) < 2 * 60 * 60 * 1000;
 
+    const catLabel = item.category && item.category !== "general" ? categoryLabels[item.category] : null;
+
     const imageHTML = item.image
         ? `<div class="card-image"><img src="${escapeHtml(item.image)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'>${regionIcons[item.region]}</div>'"></div>`
         : `<div class="card-image"><div class="card-image-placeholder">${regionIcons[item.region]}</div></div>`;
@@ -317,6 +573,7 @@ function createNewsCard(item, index) {
         <div class="card-body">
             <div class="card-header">
                 <span class="card-source">${escapeHtml(item.source)}</span>
+                ${catLabel ? `<span class="card-category category-${item.category}">${catLabel}</span>` : ""}
                 <span class="card-region region-${item.region}">${regionLabels[item.region]}</span>
             </div>
             <h3 class="card-title">${escapeHtml(item.title)}</h3>
@@ -334,6 +591,13 @@ function createNewsCard(item, index) {
         e.preventDefault();
         e.stopPropagation();
         toggleFavorite(newsId);
+    });
+
+    // Card click — open reading modal instead of external link
+    card.addEventListener("click", (e) => {
+        if (e.target.closest(".card-fav-btn")) return;  // allow favorite button to work
+        e.preventDefault();
+        openReadingModal(item);
     });
 
     return card;
