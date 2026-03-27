@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberNews Portal</title>
+    <link rel="icon" type="image/png" href="img/aletheia_news.png">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="img/aletheia_news.png" alt="Aletheia News" class="logo-icon">
+                <h1>Aletheia <span class="accent">CyberNews Portal</span></h1>
+            </div>
+            <p class="tagline">Noticias de ciberseguridad actualizadas diariamente</p>
+            <div class="last-update">
+                <span id="last-update-time">Cargando...</span>
+                <button id="theme-toggle" title="Cambiar tema">🌙</button>
+                <button id="refresh-btn" title="Actualizar noticias">⟳</button>
+            </div>
+        </div>
+
+        <!-- Toolbar: search, sort, favorites filter -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Buscar noticias..." autocomplete="off">
+                <button id="search-clear" class="search-clear" style="display:none">✕</button>
+            </div>
+            <div class="toolbar-actions">
+                <select id="sort-select" title="Ordenar por">
+                    <option value="date">Más recientes</option>
+                    <option value="date-asc">Más antiguas</option>
+                    <option value="source">Por fuente (A-Z)</option>
+                </select>
+                <button id="favorites-toggle" class="toolbar-btn" title="Ver favoritos">
+                    <span class="fav-icon">☆</span> Favoritos <span id="fav-count" class="badge">0</span>
+                </button>
+            </div>
+
+            <div class="toolbar-row" id="advanced-filters">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-date="all">Todas</button>
+                    <button class="filter-btn" data-date="24h">24h</button>
+                    <button class="filter-btn" data-date="7d">7 días</button>
+                </div>
+                <select id="source-select" title="Filtrar por fuente">
+                    <option value="all">Todas las fuentes</option>
+                </select>
+                <select id="category-select" title="Filtrar por categoría">
+                    <option value="all">Todas las categorías</option>
+                    <option value="vulnerability">Vulnerabilidad</option>
+                    <option value="malware">Malware</option>
+                    <option value="phishing">Phishing</option>
+                    <option value="breach">Brecha</option>
+                    <option value="apt">APT</option>
+                    <option value="compliance">Compliance</option>
+                    <option value="tools">Herramientas</option>
+                </select>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-btn active" data-section="all">Todas <span class="nav-count" id="count-all">0</span></button>
+            <button class="nav-btn" data-section="spain">🇪🇸 España <span class="nav-count" id="count-spain">0</span></button>
+            <button class="nav-btn" data-section="europe">🇪🇺 Europa <span class="nav-count" id="count-europe">0</span></button>
+            <button class="nav-btn" data-section="world">🌍 Mundo <span class="nav-count" id="count-world">0</span></button>
+            <button class="nav-btn" data-section="trending">🔥 Trending <span class="nav-count" id="count-trending">0</span></button>
+            <button class="nav-btn" data-section="estadisticas">📊 Estadísticas</button>
+        </nav>
+    </header>
+
+    <main>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando noticias de ciberseguridad...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display:none">
+            <p>⚠️ Error al cargar algunas fuentes. Mostrando noticias disponibles.</p>
+        </div>
+
+        <section id="news-container" class="news-grid">
+            <!-- News cards will be injected here -->
+        </section>
+
+        <div id="no-news" class="no-news" style="display:none">
+            <p>No se encontraron noticias. Intenta actualizar.</p>
+        </div>
+
+        <section id="stats-container" class="stats-container" style="display:none">
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <h3 class="stats-title">Noticias por región</h3>
+                    <div class="chart-wrapper"><canvas id="chart-region"></canvas></div>
+                </div>
+                <div class="stats-card">
+                    <h3 class="stats-title">Distribución por categoría</h3>
+                    <div class="chart-wrapper"><canvas id="chart-category"></canvas></div>
+                </div>
+                <div class="stats-card stats-card--wide">
+                    <h3 class="stats-title">Top 10 fuentes</h3>
+                    <div class="chart-wrapper chart-wrapper--tall"><canvas id="chart-sources"></canvas></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Reading Modal -->
+    <div id="modal-overlay" class="modal-overlay" style="display:none" role="dialog" aria-modal="true">
+        <div class="modal-panel">
+            <button class="modal-close" id="modal-close" title="Cerrar">✕</button>
+            <div id="modal-image-wrap" class="modal-image-wrap"></div>
+            <div class="modal-body">
+                <div class="modal-meta" id="modal-meta"></div>
+                <h2 class="modal-title" id="modal-title"></h2>
+                <p class="modal-description" id="modal-description"></p>
+                <a id="modal-link" href="#" target="_blank" rel="noopener noreferrer" class="modal-link-btn">
+                    Leer artículo completo →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top" title="Volver arriba">↑</button>
+
+    <footer>
+        <p>CyberNews Portal &copy; 2026 — Fuentes: INCIBE, HackPlayers, Hispasec, ENISA, The Register, The Hacker News, BleepingComputer, Krebs on Security, CISA y más</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>
