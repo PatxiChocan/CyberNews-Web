@@ -14,12 +14,10 @@ Portal web de noticias de ciberseguridad actualizado automáticamente con fuente
 ## Fuentes
 
 ### 🇪🇸 España
-- INCIBE / INCIBE-CERT / Protege tu Empresa
+- INCIBE / INCIBE-CERT 
 - HackPlayers
 - Una al Día (Hispasec)
-- Security Art Work
 - CyberSecurity News ES
-- Derecho de la Red
 
 ### 🇪🇺 Europa
 - ENISA

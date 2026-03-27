@@ -64,7 +64,9 @@ header {
 }
 
 .logo-icon {
-    font-size: 1.8rem;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
 }
 
 .logo h1 {

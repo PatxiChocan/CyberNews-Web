@@ -1,0 +1,19 @@
+{
+  "name": "cybernews-web",
+  "version": "1.0.0",
+  "description": "CyberNews Portal - Noticias de ciberseguridad actualizadas diariamente",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --use-system-ca server.js"
+  },
+  "keywords": ["cybersecurity", "news", "rss"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "rss-parser": "^3.13.0"
+  }
+}
